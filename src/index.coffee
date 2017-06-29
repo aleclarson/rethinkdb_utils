@@ -11,15 +11,30 @@ exports.createTable = (table) ->
   db.tableCreate table
     .run()
 
-exports.createIndex = (table, index) ->
-  db.table table
-    .indexCreate index
+exports.createIndex = (index) ->
+  parts = index.split "."
+  if parts.length isnt 2
+    throw Error "Must format index like 'table.index'"
+  db.table parts[0]
+    .indexCreate parts[1]
     .run()
 
-exports.renameField = (table, oldField, newField) ->
-  copyField = db.table(table).update mapField(newField, oldField)
-  removeField = db.table(table).replace (row) -> row.without oldField
-  db.do copyField, removeField
+exports.renameField = (oldField, newField) ->
+  parts = oldField.split "."
+  if parts.length isnt 2
+    throw Error "Must format first field like 'table.field'"
+  table = db.table parts[0]
+  copyField = table.update mapField newField, parts[1]
+  removeField = table.replace (row) -> row.without parts[1]
+  db.expr [copyField, removeField]
+    .run()
+
+exports.deleteField = (field) ->
+  parts = field.split "."
+  if parts.length isnt 2
+    throw Error "Must format field like 'table.field'"
+  db.table parts[0]
+    .replace (row) -> row.without parts[1]
     .run()
 
 mapField = (a, b) ->
