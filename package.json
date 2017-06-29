@@ -1,0 +1,10 @@
+{
+  "name": "rethinkdb_utils",
+  "dest": "js",
+  "plugins": [
+    "lotus-coffee"
+  ],
+  "dependencies": {
+    "rethinkdb": "aleclarson/rethinkdb#2.3.18"
+  }
+}
