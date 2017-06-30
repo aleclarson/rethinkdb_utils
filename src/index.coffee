@@ -7,8 +7,17 @@ exports.connect = (name) ->
   db = rethinkdb {db: name}
   return
 
+exports.getTables = ->
+  db.tableList()
+    .run()
+
 exports.createTable = (table) ->
   db.tableCreate table
+    .run()
+
+exports.getIndexes = (table) ->
+  db.table table
+    .indexList()
     .run()
 
 exports.createIndex = (index) ->
@@ -17,6 +26,14 @@ exports.createIndex = (index) ->
     throw Error "Must format index like 'table.index'"
   db.table parts[0]
     .indexCreate parts[1]
+    .run()
+
+exports.deleteIndex = (index) ->
+  parts = index.split "."
+  if parts.length isnt 2
+    throw Error "Must format index like 'table.index'"
+  db.table parts[0]
+    .indexDrop parts[1]
     .run()
 
 exports.renameField = (oldField, newField) ->
