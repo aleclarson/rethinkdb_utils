@@ -42,7 +42,7 @@ exports.renameField = (oldField, newField) ->
     throw Error "Must format first field like 'table.field'"
   table = db.table parts[0]
   copyField = table.update mapField newField, parts[1]
-  removeField = table.replace (row) -> row.without parts[1]
+  removeField = table.replace db.row.without parts[1]
   db.expr [copyField, removeField]
     .run()
 
